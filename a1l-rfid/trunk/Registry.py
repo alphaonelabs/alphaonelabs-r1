@@ -75,12 +75,42 @@ class Registration(webapp.RequestHandler):
     self.gotAuthorization = """
         <html>
             <head>
-                <title>Cool, you're done!</title>
+                <title>Details</title>
             </head>
             <body>
-                <h1>You're all done!</h1>
-                You can always log in to foursquare to revoke or change these
-                credentials.
+                <h1>Scan RFID tag</h1>
+                <p>You can always log in to foursquare to revoke or change these
+                credentials.</p>
+                <p>Now let's scan your tag, so you won't have to do this agan</p>
+                <form method='POST'>
+                    <table border='0'>
+                    <tr><td>First Name: </td>
+                     <td><input type='text' name='first_name' value='%(firstname)s'/></td>
+                     </tr>
+                    <tr><td>Last Name:</td>
+                     <td><input type='text' name='last_name' value='%(lastname)s'/></td>
+                     </tr>
+                    <tr><td>Tag ID:</td><td><input type='text' name='tag_id' value=''/></td>
+                    <tr><td colspan='2'><input type='submit' name='save' value='Save'/></td>
+                    </tr>
+                    </table>
+                    <input type='hidden' name='token' value='%(token)s'/>
+                    <input type='hidden' name='secret' value='%(secret)s'/>
+                </form>
+            </body>
+        </html>
+    """
+
+    self.saved = """
+        <html>
+            <head>
+                <title>All Done!</title>
+            </head>
+            <body>
+                <h1><font color='green'>All Done</font></h1>
+                <p>You're all saved in the database.  Go ahead and check in for
+                the first time!</p>
+                <p>Thanks for joining</p>
             </body>
         </html>
     """
@@ -107,7 +137,7 @@ class Registration(webapp.RequestHandler):
         signature_method_plaintext = oauth.OAuthSignatureMethod_PLAINTEXT()
         signature_method_hmac_sha1 = oauth.OAuthSignatureMethod_HMAC_SHA1()
 
-        # Did we get here to register, or with a response?
+        # What step are we here with?
         # TODO: This test won't work if auth fails
         if (request.get("oauth_token") == "":
             # Get the temporary auth token
@@ -121,6 +151,8 @@ class Registration(webapp.RequestHandler):
             print 'key: %s' % str(token.key)
             print 'secret: %s' % str(token.secret)
             print 'callback confirmed? %s' % str(token.callback_confirmed)
+
+            # If the request failed, display the something went wrong page
 
             # Construct the request URL
             oauth_request = oauth.OAuthRequest.from_token_and_callback(token=token, http_url=client.authorization_url)
@@ -144,5 +176,18 @@ class Registration(webapp.RequestHandler):
             print 'key: %s' % str(token.key)
             print 'secret: %s' % str(token.secret)
 
+    def post(self):
             # Store those in the database and let them know we're good
-            self.response.out.write(self.gotAuthorization)
+            user_rec = RFIDMapping()
+            user_rec.rfid = self.request.get("tag_id")
+            user_rec.name = self.request.get("first_name") + 
+                    " " + self.request.get("last_name")
+            user_rec.foursq_status = "None"
+
+            # Now save the data
+            try:
+                db.put(user_rec)
+                self.response.out.write(self.saved)
+            except:
+                self.response.out.write(self.authFailed)
+            
