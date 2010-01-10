@@ -1,6 +1,8 @@
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from oauth import oauth
+import os
+from google.appengine.ext.webapp import template
 import httplib
 import time
 
@@ -138,7 +140,7 @@ class Registration(webapp.RequestHandler):
 
         # What step are we here with?
         # TODO: This test won't work if auth fails
-        if request.get("oauth_token") == "":
+        if self.request.get("oauth_token") == "":
             # Get the temporary auth token
             oauth_request = oauth.OAuthRequest.from_consumer_and_token(consumer, 
                     callback=Callback_URL, http_url=client.request_token_url)

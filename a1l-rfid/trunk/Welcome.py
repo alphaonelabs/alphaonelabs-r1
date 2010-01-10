@@ -1,17 +1,10 @@
+import os
 from google.appengine.ext import webapp
+from google.appengine.ext.webapp import template
 
 class Welcome(webapp.RequestHandler):
     def get(self):
-        self.response.out.write("""
-        <html>
-            <head>
-                <title>Alpha One Labs RFID System</title>
-                <script src='mainpage.js'></script>
-            </head>
-            <body>
-            <h1>Welcome to the Alpha One Labs RFID system</h1>
-            <input type='button' onclick='load_users()' value="See who's been here"/>
-            <input type='button' onclick='register()' value="Register a new user"/>
-            </body>
-        </html>
-        """)
+        template_values = {}
+        path = os.path.join(os.path.dirname(__file__), 
+                'templates','welcome.html')
+        self.response.out.write(template.render(path, template_values))
