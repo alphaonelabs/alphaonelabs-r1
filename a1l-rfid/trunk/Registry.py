@@ -5,6 +5,7 @@ import os
 from google.appengine.ext.webapp import template
 import httplib
 import time
+import logging
 
 Request_Token_URL='http://foursquare.com/oauth/request_token'
 Access_Token_URL='http://foursquare.com/oauth/access_token'
@@ -145,37 +146,37 @@ class Registration(webapp.RequestHandler):
             oauth_request = oauth.OAuthRequest.from_consumer_and_token(consumer, 
                     callback=Callback_URL, http_url=client.request_token_url)
             oauth_request.sign_request(signature_method_hmac_sha1, consumer, None)
-            print 'REQUEST (via headers)'
-            print 'parameters: %s' % str(oauth_request.parameters)
+            logging.debug('REQUEST (via headers)')
+            logging.debug('parameters: %s' % str(oauth_request.parameters))
             token = client.fetch_request_token(oauth_request)
-            print 'GOT'
-            print 'key: %s' % str(token.key)
-            print 'secret: %s' % str(token.secret)
-            print 'callback confirmed? %s' % str(token.callback_confirmed)
+            logging.debug('GOT')
+            logging.debug('key: %s' % str(token.key))
+            logging.debug('secret: %s' % str(token.secret))
+            logging.debug('callback confirmed? %s' % str(token.callback_confirmed))
 
             # If the request failed, display the something went wrong page
 
             # Construct the request URL
             oauth_request = oauth.OAuthRequest.from_token_and_callback(token=token, http_url=client.authorization_url)
-            print 'REQUEST (via url query string)'
-            print 'parameters: %s' % str(oauth_request.parameters)
+            logging.debug('REQUEST (via url query string)')
+            logging.debug('parameters: %s' % str(oauth_request.parameters))
 
             self.response.out.write(
                 self.requestAuthorization % { 'url': oauth_request.to_url() }
             )
         else:
             # Check the auth token by converting it into a token + secret
-            print '* Obtain an access token ...'
+            logging.debug('* Obtain an access token ...')
             oauth_request = oauth.OAuthRequest.from_consumer_and_token(
                 consumer, token=token, verifier=verifier, 
                 http_url=client.access_token_url)
             oauth_request.sign_request(signature_method_plaintext, consumer, token)
-            print 'REQUEST (via headers)'
-            print 'parameters: %s' % str(oauth_request.parameters)
+            logging.debug('REQUEST (via headers)')
+            logging.debug('parameters: %s' % str(oauth_request.parameters))
             token = client.fetch_access_token(oauth_request)
-            print 'GOT'
-            print 'key: %s' % str(token.key)
-            print 'secret: %s' % str(token.secret)
+            logging.debug('GOT')
+            logging.debug('key: %s' % str(token.key))
+            logging.debug('secret: %s' % str(token.secret))
 
     def post(self):
             # Store those in the database and let them know we're good
