@@ -27,7 +27,7 @@ def main():
   application = webapp.WSGIApplication([('/', Welcome),
                                         ('/rfid', Foursq),
                                         ('/log', Logger),
-                                        ('/register',Registration)
+                                        ('/register',Registration),
                                         ('/got-request-token',Registration)
                                         ],
                                        debug=True)

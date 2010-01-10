@@ -1,7 +1,7 @@
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
-from oauth.oauth import oauth
-import httlib
+from oauth import oauth
+import httplib
 import time
 
 Request_Token_URL='http://foursquare.com/oauth/request_token'
@@ -11,7 +11,7 @@ Authorize_URL='http://foursquare.com/oauth/authorize'
 #We currently support hmac-sha1 signed requests
 #*Application Name:* Alpha One Labs
 #RFID<http://foursquare.com/oauth/www.alphaonelabs.com>
-Callback_URL=/got-request-token
+Callback_URL='/got-request-token'
 
 consumer_key = '1TDWB1RAY1FQJT2HVOUZUMHCCYFBJA5EX0Z440OYZIRQTQMP'
 consumer_secret = 'XAV035QZG2DTALIHXQZ4CHRPZC4AJZAUTRRSWUEJQKDUTEN3'
@@ -58,7 +58,7 @@ class SimpleOAuthClient(oauth.OAuthClient):
 
 
 class Registration(webapp.RequestHandler):
-    self.requestAuthorization = """
+    requestAuthorization = """
         <html>
             <head>
                 <title>Getting Authorization from Foursquare</title>
@@ -72,7 +72,7 @@ class Registration(webapp.RequestHandler):
         </html>
     """
 
-    self.gotAuthorization = """
+    gotAuthorization = """
         <html>
             <head>
                 <title>Details</title>
@@ -101,7 +101,7 @@ class Registration(webapp.RequestHandler):
         </html>
     """
 
-    self.saved = """
+    saved = """
         <html>
             <head>
                 <title>All Done!</title>
@@ -115,7 +115,7 @@ class Registration(webapp.RequestHandler):
         </html>
     """
 
-    self.authFailed = """
+    authFailed = """
         <html>
             <head>
                 <title>Something went wrong!</title>
@@ -130,7 +130,6 @@ class Registration(webapp.RequestHandler):
     """
 
     def get(self):
-        oauth auth = oauth()
         client = SimpleOAuthClient('foursquare.com', 80,
                     Request_Token_URL, Access_Token_URL, Authorize_URL)
         consumer = oauth.OAuthConsumer(consumer_key, consumer_secret)
@@ -139,7 +138,7 @@ class Registration(webapp.RequestHandler):
 
         # What step are we here with?
         # TODO: This test won't work if auth fails
-        if (request.get("oauth_token") == "":
+        if request.get("oauth_token") == "":
             # Get the temporary auth token
             oauth_request = oauth.OAuthRequest.from_consumer_and_token(consumer, 
                     callback=Callback_URL, http_url=client.request_token_url)
@@ -180,8 +179,7 @@ class Registration(webapp.RequestHandler):
             # Store those in the database and let them know we're good
             user_rec = RFIDMapping()
             user_rec.rfid = self.request.get("tag_id")
-            user_rec.name = self.request.get("first_name") + 
-                    " " + self.request.get("last_name")
+            user_rec.name = self.request.get("first_name") + " " + self.request.get("last_name")
             user_rec.foursq_status = "None"
 
             # Now save the data
