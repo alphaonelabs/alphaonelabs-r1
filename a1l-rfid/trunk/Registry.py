@@ -1,6 +1,7 @@
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from oauth import oauth
+from simpleOauthClient import SimpleOauthClient
 import os
 from google.appengine.ext.webapp import template
 import httplib
@@ -10,55 +11,14 @@ import logging
 Request_Token_URL='http://foursquare.com/oauth/request_token'
 Access_Token_URL='http://foursquare.com/oauth/access_token'
 Authorize_URL='http://foursquare.com/oauth/authorize'
+Callback_URL='/got-request-token'
 
 #We currently support hmac-sha1 signed requests
 #*Application Name:* Alpha One Labs
 #RFID<http://foursquare.com/oauth/www.alphaonelabs.com>
-Callback_URL='/got-request-token'
 
 consumer_key = '1TDWB1RAY1FQJT2HVOUZUMHCCYFBJA5EX0Z440OYZIRQTQMP'
 consumer_secret = 'XAV035QZG2DTALIHXQZ4CHRPZC4AJZAUTRRSWUEJQKDUTEN3'
-
-# example client using httplib with headers
-class SimpleOAuthClient(oauth.OAuthClient):
-
-    def __init__(self, server, port=httplib.HTTP_PORT, request_token_url='', access_token_url='', authorization_url=''):
-        self.server = server
-        self.port = port
-        self.request_token_url = request_token_url
-        self.access_token_url = access_token_url
-        self.authorization_url = authorization_url
-        self.connection = httplib.HTTPConnection("%s:%d" % (self.server, self.port))
-
-    def fetch_request_token(self, oauth_request):
-        # via headers
-        # -> OAuthToken
-        self.connection.request(oauth_request.http_method, self.request_token_url, headers=oauth_request.to_header()) 
-        response = self.connection.getresponse()
-        return oauth.OAuthToken.from_string(response.read())
-
-    def fetch_access_token(self, oauth_request):
-        # via headers
-        # -> OAuthToken
-        self.connection.request(oauth_request.http_method, self.access_token_url, headers=oauth_request.to_header()) 
-        response = self.connection.getresponse()
-        return oauth.OAuthToken.from_string(response.read())
-
-    def authorize_token(self, oauth_request):
-        # via url
-        # -> typically just some okay response
-        self.connection.request(oauth_request.http_method, oauth_request.to_url()) 
-        response = self.connection.getresponse()
-        return response.read()
-
-    def access_resource(self, oauth_request):
-        # via post body
-        # -> some protected resources
-        headers = {'Content-Type' :'application/x-www-form-urlencoded'}
-        self.connection.request('POST', RESOURCE_URL, body=oauth_request.to_postdata(), headers=headers)
-        response = self.connection.getresponse()
-        return response.read()
-
 
 class Registration(webapp.RequestHandler):
     requestAuthorization = """
