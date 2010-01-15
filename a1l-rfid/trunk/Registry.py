@@ -2,6 +2,7 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from oauth import oauth
 from simpleOauthClient import SimpleOauthClient
+from google.appengine.api.memcache import Client
 import os
 from google.appengine.ext.webapp import template
 import httplib
@@ -39,8 +40,10 @@ class Registration(webapp.RequestHandler):
         <html>
             <head>
                 <title>Details</title>
+                <script type="text/javascript" src="authpage.js">
+                </script>
             </head>
-            <body>
+            <body onload="waitfortag()">
                 <h1>Scan RFID tag</h1>
                 <p>You can always log in to foursquare to revoke or change these
                 credentials.</p>
@@ -50,10 +53,10 @@ class Registration(webapp.RequestHandler):
                     <tr><td>First Name: </td>
                      <td><input type='text' name='first_name' value='%(firstname)s'/></td>
                      </tr>
-                    <tr><td>Last Name:</td>
+                     <tr><td>Last Name:</td>
                      <td><input type='text' name='last_name' value='%(lastname)s'/></td>
                      </tr>
-                    <tr><td>Tag ID:</td><td><input type='text' name='tag_id' value=''/></td>
+                    <tr><td>Tag ID:</td><td><input type='text' id='tag_id' name='tag_id' value=''/></td>
                     <tr><td colspan='2'><input type='submit' name='save' value='Save'/></td>
                     </tr>
                     </table>
@@ -137,6 +140,13 @@ class Registration(webapp.RequestHandler):
             logging.debug('GOT')
             logging.debug('key: %s' % str(token.key))
             logging.debug('secret: %s' % str(token.secret))
+            self.request.out.write(
+                self.gotAuthorization % {
+                    'token': token.key, 'secret': token.secret,
+                    'firstname': 'First', 'lastname': 'Last'
+                }
+            )
+            Client.set('saveInsteadOfCheckin', True, 30) 
 
     def post(self):
             # Store those in the database and let them know we're good

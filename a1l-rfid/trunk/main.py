@@ -26,6 +26,7 @@ from Registry import Registration
 def main():
   application = webapp.WSGIApplication([('/', Welcome),
                                         ('/rfid', Foursq),
+                                        ('/last-rfid', Foursq),
                                         ('/log', Logger),
                                         ('/register',Registration),
                                         ('/got-request-token',Registration)
