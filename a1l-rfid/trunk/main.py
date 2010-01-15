@@ -24,6 +24,7 @@ from Logger import Logger
 from Registry import Registration
 
 def main():
+  Logger.getLogger.setLevel(Logger.debug)
   application = webapp.WSGIApplication([('/', Welcome),
                                         ('/rfid', Foursq),
                                         ('/last-rfid', Foursq),
