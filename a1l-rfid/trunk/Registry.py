@@ -1,7 +1,7 @@
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from oauth import oauth
-from simpleOauthClient import SimpleOauthClient
+from simpleOauthClient import SimpleOAuthClient
 from google.appengine.api.memcache import Client
 import os
 from google.appengine.ext.webapp import template

@@ -22,9 +22,10 @@ from Foursq import Foursq
 from Welcome import Welcome
 from Logger import Logger
 from Registry import Registration
+import logging
 
 def main():
-  Logger.getLogger.setLevel(Logger.debug)
+  logging.getLogger().setLevel(logging.debug)
   application = webapp.WSGIApplication([('/', Welcome),
                                         ('/rfid', Foursq),
                                         ('/last-rfid', Foursq),

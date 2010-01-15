@@ -1,4 +1,4 @@
-from google.appengine.api import db
+from google.appengine.ext import db
 
 class RFIDMapping(db.Model):
     rfid = db.StringProperty()
