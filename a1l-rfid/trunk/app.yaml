@@ -8,6 +8,10 @@ handlers:
   static_files: static/\1
   upload: static/(.*\.js)
 
+- url: /(.*\.png)
+  static_files: static/\1
+  upload: static/(.*\.png)
+
 - url: .*
   script: main.py
   

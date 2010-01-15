@@ -43,5 +43,5 @@ class Foursq(webapp.RequestHandler):
                 entry.foursq_status = "checked_in"
                 db.put(entry)
 
-            except Exception:
+            except Exception,  e:
                 log.error(e.str())
