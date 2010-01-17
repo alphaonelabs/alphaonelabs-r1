@@ -60,9 +60,17 @@ class Registration(webapp.RequestHandler):
                     </tr>
                     </table>
                 </form>
+                %(pic)s
                 <div id='results'/>
             </body>
         </html>
+    """
+
+    picFragment = """
+        <div id='pic'>
+            <p>Is this you?</p>
+            <img src=%(picurl)s />
+        </div>
     """
 
     saved = """
@@ -158,16 +166,21 @@ class Registration(webapp.RequestHandler):
                     firstname=firstnameNode.firstChild.data
                     lastnameNode = resp.getElementsByTagName('lastname')[0]
                     lastname=lastnameNode.firstChild.data
+                    picNode = resp.getElementsByTagName('photo')[0]
+                    picurl=picNode.firstChild.data
+                    pic = self.picFragment % { 'picurl': picurl }
                 except:
                     traceback.print_exception(sys.exc_info()[0], 
                                       sys.exc_info()[1], 
                                       sys.exc_info()[2], 5, sys.stderr)
                     firstname = 'First'
                     lastname = 'last'
+                    pic = ''
 
                 self.response.out.write(
                     self.gotAuthorization % {
-                        'firstname': firstname, 'lastname': lastname
+                        'firstname': firstname, 'lastname': lastname,
+                        'pic': pic
                     }
                 )
             elif self.request.path == '/save-request-token':
