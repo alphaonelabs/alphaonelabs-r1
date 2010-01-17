@@ -1,5 +1,6 @@
 from oauth import oauth
 import httplib
+import logging
 
 # example client using httplib with headers
 class SimpleOAuthClient(oauth.OAuthClient):
@@ -24,7 +25,9 @@ class SimpleOAuthClient(oauth.OAuthClient):
         # -> OAuthToken
         self.connection.request(oauth_request.http_method, self.access_token_url, headers=oauth_request.to_header()) 
         response = self.connection.getresponse()
-        return oauth.OAuthToken.from_string(response.read())
+        s=response.read()
+        logging.debug("response "+s)
+        return oauth.OAuthToken.from_string(s)
 
     def authorize_token(self, oauth_request):
         # via url

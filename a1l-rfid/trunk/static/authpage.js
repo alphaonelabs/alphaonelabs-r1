@@ -12,7 +12,6 @@ function check_rfscan() {
 function rfscan_result() {
     if (req.readyState < 4)
     {
-       window.setTimeout("check_rfscan()", 500);
        return;
     }
     if (req.status == 200)
@@ -20,4 +19,5 @@ function rfscan_result() {
         var rfid_text = document.getElementById("tag_id");
         rfid_text.text = req.responseText;
     }
+    window.setTimeout("check_rfscan()", 500);
 }

@@ -22,16 +22,16 @@ from Foursq import Foursq
 from Welcome import Welcome
 from Logger import Logger
 from Registry import Registration
-import logging
+import sys
 
 def main():
-  logging.getLogger().setLevel(logging.debug)
   application = webapp.WSGIApplication([('/', Welcome),
                                         ('/rfid', Foursq),
                                         ('/last-rfid', Foursq),
                                         ('/log', Logger),
                                         ('/register',Registration),
-                                        ('/got-request-token',Registration)
+                                        ('/got-request-token',Registration),
+                                        ('/save-request-token',Registration)
                                         ],
                                        debug=True)
   util.run_wsgi_app(application)
