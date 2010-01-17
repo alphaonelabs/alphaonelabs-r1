@@ -10,6 +10,7 @@ import time
 import logging
 import traceback
 import sys
+from xml.dom.minidom import parseString
 from Models import *
 
 Request_Token_URL='http://foursquare.com/oauth/request_token'
@@ -100,21 +101,26 @@ class Registration(webapp.RequestHandler):
     def get(self):
         return self.post()
 
-    def access_resource(self, mapping, params, url):
-        client = SimpleOAuthClient('foursquare.com', 80,
+    def access_resource(self, token, secret, url, method=None, **params):
+        client = SimpleOAuthClient('api.foursquare.com', 80,
                     Request_Token_URL, Access_Token_URL, Authorize_URL)
         consumer = oauth.OAuthConsumer(consumer_key, consumer_secret)
         signature_method_plaintext = oauth.OAuthSignatureMethod_PLAINTEXT()
         signature_method_hmac_sha1 = oauth.OAuthSignatureMethod_HMAC_SHA1()
-        token = oauth.OAuthToken(mapping.oauth_token, mapping.oauth_secret)
+        token = oauth.OAuthToken(token, secret)
         oauth_request = oauth.OAuthRequest.from_consumer_and_token(
-            consumer, token=token, verifier=None, 
-            http_url=API_Url)
+            consumer, token=token,
+            http_url=API_URL+url,
+            parameters=params)
+        if method is not None:
+            oauth_request.http_method = method
         oauth_request.sign_request(signature_method_hmac_sha1, 
             consumer, token)
-        for k in params.keys():
-            oauth_request.set_parameter(k, params[k])
-        return client.access_resource(oauth_request, url)
+        logging.debug("Sending Request: "+oauth_request.to_url())
+        # This will intentionally pass any exceptions up to the caller
+        res = client.access_resource(oauth_request, url)
+        logging.debug("Response: "+res)
+        return parseString(res)
 
     def post(self):
         logging.getLogger().setLevel(logging.DEBUG)
@@ -171,25 +177,45 @@ class Registration(webapp.RequestHandler):
                 logging.info('REQUEST (via headers)')
                 logging.info('parameters: %s' % str(oauth_request.parameters))
                 token = client.fetch_access_token(oauth_request)
+                if not memcache.set(key='token',value=token):
+                    raise Exception("Failed to set token in session")
                 logging.info('GOT')
                 logging.info('key: %s' % str(token.key))
                 logging.info('secret: %s' % str(token.secret))
                 if not memcache.set('saveInsteadOfCheckin', True):
                     raise Exception("Failed to set save flag")
+                try:
+                    resp=self.access_resource(token.key, token.secret, 
+                                          '/v1/user')
+                    firstname = resp.getElementsByTagName("firstname")[0]
+                    if firstname is not None:
+                        firstname = firstname.firstChild.data
+                    lastname = resp.getElementsByTagName("lastname")[0]
+                    if lastname is not None:
+                        lastname = lastname.firstChild.data
+                except:
+                    traceback.print_exception(sys.exc_info()[0], 
+                                      sys.exc_info()[1], 
+                                      sys.exc_info()[2], 5, sys.stderr)
+                    firstname = 'First'
+                    lastname = 'last'
+
                 self.response.out.write(
                     self.gotAuthorization % {
-                        'firstname': 'First', 'lastname': 'Last'
+                        'firstname': firstname, 'lastname': lastname
                     }
                 )
             elif self.request.path == '/save-request-token':
                 logging.debug("Save token data")
+                memcache.delete("saveInsteadOfCheckin")
                 token = memcache.get('token');
                 if token is None:
                     raise "No token stored in session"
                 # Store those in the database and let them know we're good
                 user_rec = RFIDMapping()
                 user_rec.rfid = self.request.get("tag_id")
-                user_rec.name = self.request.get("first_name") + " " + self.request.get("last_name")
+                user_rec.name = self.request.get("first_name") + \
+                        " " + self.request.get("last_name")
                 user_rec.foursq_status = "None"
                 user_rec.oauth_token = token.key
                 user_rec.oauth_secret = token.secret

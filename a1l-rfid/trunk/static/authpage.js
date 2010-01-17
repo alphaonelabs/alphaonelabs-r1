@@ -25,8 +25,8 @@ function rfscan_result() {
     if (req.status == 200)
     {
         document.getElementById('results').innerHTML=req.responseText;
-        rfid_text.value = req.responseText;
+        if (req.responseText != "")
+            rfid_text.value = req.responseText;
     }
-    if (rfid_text.value == "")
-        window.setTimeout("check_rfscan()", 500);
+    window.setTimeout("check_rfscan()", 500);
 }

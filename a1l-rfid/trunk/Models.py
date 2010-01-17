@@ -10,6 +10,7 @@ class RFIDMapping(db.Model):
     status = db.StringProperty()
 
 class AccessLog(db.Model):
-    rfid_id = db.ReferenceProperty(RFIDMapping)
+    rfid_record = db.ReferenceProperty(RFIDMapping)
+    rfid_id = db.StringProperty()
     access_time = db.DateTimeProperty(auto_now = True)
     foursq_status = db.StringProperty()

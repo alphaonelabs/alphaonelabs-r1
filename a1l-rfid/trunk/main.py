@@ -31,7 +31,8 @@ def main():
                                         ('/log', Logger),
                                         ('/register',Registration),
                                         ('/got-request-token',Registration),
-                                        ('/save-request-token',Registration)
+                                        ('/save-request-token',Registration),
+                                        ('.*', Welcome)
                                         ],
                                        debug=True)
   util.run_wsgi_app(application)
