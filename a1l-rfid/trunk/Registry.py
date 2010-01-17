@@ -100,7 +100,7 @@ class Registration(webapp.RequestHandler):
             fs = foursquare.Foursquare(credentials)
             user_token = oauth.OAuthToken(token, secret)
             credentials.set_access_token(user_token)
-            resp = fs.call_method(method, params)
+            resp = fs.call_method(method, **params)
             logging.debug('returning '+resp)
             return resp
         except Exception, e:
