@@ -41,7 +41,7 @@ class Foursq(webapp.RequestHandler):
                     client = Registration()
                     rc = client.access_resource(
                         mapping.oauth_token, mapping.oauth_secret, 
-                        '/v1/checkin', "POST", vid=self.venue_id)
+                        'checkin', vid=self.venue_id)
 
                     # update the log entry's status
                     entry.foursq_status = "checked_in"

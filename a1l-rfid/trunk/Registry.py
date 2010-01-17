@@ -1,23 +1,17 @@
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
-from oauth import oauth
-from simpleOauthClient import SimpleOAuthClient
 from google.appengine.api import memcache
 import os
 from google.appengine.ext.webapp import template
-import httplib
 import time
 import logging
 import traceback
 import sys
-from xml.dom.minidom import parseString
 from Models import *
-
-Request_Token_URL='http://foursquare.com/oauth/request_token'
-Access_Token_URL='http://foursquare.com/oauth/access_token'
-Authorize_URL='http://foursquare.com/oauth/authorize'
-API_URL='http://api.foursquare.com'
-Callback_URL='/got-request-token'
+import foursquare
+from oauth import oauth
+from xml.dom.minidom import parseString
+from pprint import PrettyPrinter
 
 #We currently support hmac-sha1 signed requests
 #*Application Name:* Alpha One Labs
@@ -98,70 +92,48 @@ class Registration(webapp.RequestHandler):
         </html>
     """
 
+    def access_resource(self, token, secret, method, **params):
+        logging.info('calling '+method+' with '+PrettyPrinter().pformat(params))
+        try:
+            credentials = foursquare.OAuthCredentials( \
+                    consumer_key, consumer_secret)
+            fs = foursquare.Foursquare(credentials)
+            user_token = oauth.OAuthToken(token, secret)
+            credentials.set_access_token(user_token)
+            resp = fs.call_method(method, params)
+            logging.debug('returning '+resp)
+            return resp
+        except Exception, e:
+            # If the request failed, display the something went wrong page
+            logging.error("Failed registry request: "+str(e))
+            traceback.print_exception(sys.exc_info()[0], sys.exc_info()[1], 
+                                      sys.exc_info()[2], 5, sys.stderr)
+            return None
+
     def get(self):
         return self.post()
 
-    def access_resource(self, token, secret, url, method=None, **params):
-        client = SimpleOAuthClient('api.foursquare.com', 80,
-                    Request_Token_URL, Access_Token_URL, Authorize_URL)
-        consumer = oauth.OAuthConsumer(consumer_key, consumer_secret)
-        signature_method_plaintext = oauth.OAuthSignatureMethod_PLAINTEXT()
-        signature_method_hmac_sha1 = oauth.OAuthSignatureMethod_HMAC_SHA1()
-        token = oauth.OAuthToken(token, secret)
-        oauth_request = oauth.OAuthRequest.from_consumer_and_token(
-            consumer, token=token,
-            http_url=API_URL+url,
-            parameters=params)
-        if method is not None:
-            oauth_request.http_method = method
-        oauth_request.sign_request(signature_method_hmac_sha1, 
-            consumer, token)
-        logging.debug("Sending Request: "+oauth_request.to_url())
-        # This will intentionally pass any exceptions up to the caller
-        res = client.access_resource(oauth_request, url)
-        logging.debug("Response: "+res)
-        return parseString(res)
-
     def post(self):
         logging.getLogger().setLevel(logging.DEBUG)
-        client = SimpleOAuthClient('foursquare.com', 80,
-                    Request_Token_URL, Access_Token_URL, Authorize_URL)
-        consumer = oauth.OAuthConsumer(consumer_key, consumer_secret)
-        signature_method_plaintext = oauth.OAuthSignatureMethod_PLAINTEXT()
-        signature_method_hmac_sha1 = oauth.OAuthSignatureMethod_HMAC_SHA1()
 
         # What step are we here with?
         logging.info("request: "+self.request.path)
-        # TODO: This test won't work if auth fails
         try:
+            credentials = foursquare.OAuthCredentials( \
+                    consumer_key, consumer_secret)
+            fs = foursquare.Foursquare(credentials)
+
             if self.request.path == "/register":
                 logging.debug("Register entry")
                 # Get the temporary auth token
-                oauth_request = oauth.OAuthRequest.from_consumer_and_token(
-                    consumer, callback=Callback_URL, 
-                    http_url=client.request_token_url)
-                oauth_request.sign_request(signature_method_hmac_sha1, 
-                                        consumer, None)
-                logging.info('REQUEST (via headers)')
-                logging.info('parameters: %s' % str(oauth_request.parameters))
-                token = client.fetch_request_token(oauth_request)
-                logging.info('GOT')
-                logging.info('key: %s' % str(token.key))
-                logging.info('secret: %s' % str(token.secret))
-                logging.info('callback confirmed? %s' 
-                    % str(token.callback_confirmed))
-                if not memcache.set(key='token',value=token):
+                app_token = fs.request_token()
+                auth_url = fs.authorize(app_token)
+                if not memcache.set(key='token',value=app_token):
                     raise Exception("Failed to set token in session")
-                # Construct the request URL
-                oauth_request = oauth.OAuthRequest.from_token_and_callback(
-                    token=token, http_url=client.authorization_url)
-                logging.info('REQUEST (via url query string)')
-                logging.info('parameters: %s' % str(oauth_request.parameters))
-                logging.debug("URL "+oauth_request.to_url())
-
                 self.response.out.write(
-                    self.requestAuthorization % { 'url': oauth_request.to_url() }
+                  self.requestAuthorization % { 'url': auth_url }
                 )
+
             elif self.request.path == '/got-request-token':
                 logging.debug("Register with auth token")
                 token = memcache.get('token');
@@ -169,30 +141,23 @@ class Registration(webapp.RequestHandler):
                     raise "No token stored in session"
                 # Check the auth token by converting it into a token + secret
                 logging.info('* Obtain an access token ...')
-                oauth_request = oauth.OAuthRequest.from_consumer_and_token(
-                    consumer, token=token, verifier=None, 
-                    http_url=client.access_token_url)
-                oauth_request.sign_request(signature_method_hmac_sha1, 
-                    consumer, token)
-                logging.info('REQUEST (via headers)')
-                logging.info('parameters: %s' % str(oauth_request.parameters))
-                token = client.fetch_access_token(oauth_request)
-                if not memcache.set(key='token',value=token):
+                user_token = fs.access_token(token)
+                credentials.set_access_token(user_token)
+                if not memcache.set(key='token',value=user_token):
                     raise Exception("Failed to set token in session")
                 logging.info('GOT')
-                logging.info('key: %s' % str(token.key))
-                logging.info('secret: %s' % str(token.secret))
+                logging.info('key: %s' % str(user_token.key))
+                logging.info('secret: %s' % str(user_token.secret))
                 if not memcache.set('saveInsteadOfCheckin', True):
                     raise Exception("Failed to set save flag")
                 try:
-                    resp=self.access_resource(token.key, token.secret, 
-                                          '/v1/user')
-                    firstname = resp.getElementsByTagName("firstname")[0]
-                    if firstname is not None:
-                        firstname = firstname.firstChild.data
-                    lastname = resp.getElementsByTagName("lastname")[0]
-                    if lastname is not None:
-                        lastname = lastname.firstChild.data
+                    respstr=fs.user()
+                    resp=parseString(respstr)
+                    logging.debug('resp: '+str(respstr))
+                    firstnameNode = resp.getElementsByTagName('firstname')[0]
+                    firstname=firstnameNode.firstChild.data
+                    lastnameNode = resp.getElementsByTagName('lastname')[0]
+                    lastname=lastnameNode.firstChild.data
                 except:
                     traceback.print_exception(sys.exc_info()[0], 
                                       sys.exc_info()[1], 
