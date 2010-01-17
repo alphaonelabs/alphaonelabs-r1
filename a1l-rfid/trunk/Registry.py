@@ -47,7 +47,7 @@ class Registration(webapp.RequestHandler):
                 <script type="text/javascript" src="authpage.js">
                 </script>
             </head>
-            <body onload="waitfortag()">
+            <body onload="wait_for_tag()">
                 <h1>Scan RFID tag</h1>
                 <p>You can always log in to foursquare to revoke or change these
                 credentials.</p>
@@ -65,6 +65,7 @@ class Registration(webapp.RequestHandler):
                     </tr>
                     </table>
                 </form>
+                <div id='results'/>
             </body>
         </html>
     """
@@ -143,7 +144,8 @@ class Registration(webapp.RequestHandler):
                 logging.info('secret: %s' % str(token.secret))
                 logging.info('callback confirmed? %s' 
                     % str(token.callback_confirmed))
-                memcache.set(key='token',value=token);
+                if not memcache.set(key='token',value=token):
+                    raise Exception("Failed to set token in session")
                 # Construct the request URL
                 oauth_request = oauth.OAuthRequest.from_token_and_callback(
                     token=token, http_url=client.authorization_url)
@@ -172,17 +174,18 @@ class Registration(webapp.RequestHandler):
                 logging.info('GOT')
                 logging.info('key: %s' % str(token.key))
                 logging.info('secret: %s' % str(token.secret))
+                if not memcache.set('saveInsteadOfCheckin', True):
+                    raise Exception("Failed to set save flag")
                 self.response.out.write(
                     self.gotAuthorization % {
                         'firstname': 'First', 'lastname': 'Last'
                     }
                 )
-            elif self.request.path == '/save-request_token':
+            elif self.request.path == '/save-request-token':
                 logging.debug("Save token data")
                 token = memcache.get('token');
                 if token is None:
                     raise "No token stored in session"
-                memcache.set(key='saveInsteadOfCheckin', value=True, time=60) 
                 # Store those in the database and let them know we're good
                 user_rec = RFIDMapping()
                 user_rec.rfid = self.request.get("tag_id")

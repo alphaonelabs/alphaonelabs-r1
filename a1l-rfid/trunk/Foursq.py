@@ -15,8 +15,9 @@ class Foursq(webapp.RequestHandler):
         try:
             if self.request.path == '/rfid':
                 if memcache.get('saveInsteadOfCheckin') is not None and \
-                        Client.get('savedId') is None:
-                    memcache.set(key='savedId', value=self.request.get('scanned_id'))
+                        memcache.get('savedId') is None:
+                    if not memcache.set('savedId', self.request.get('scanned_id')):
+                        raise Exception("Failed to save scanned id")
                 else:
                     # Add a log entry for the scan
                     entry = AccessLog()
@@ -36,7 +37,9 @@ class Foursq(webapp.RequestHandler):
                     entry.foursq_status = "checked_in"
                     db.put(entry)
             elif self.request.path == '/last-rfid':
-                self.response.out.write(memcache.get('savedId'))
+                id = memcache.get('savedId')
+                if id is not None:
+                    self.response.out.write(id+"\n")
                 return
             else:
                 raise Exception("Unknown request: "+request.path)
