@@ -191,9 +191,10 @@ class Registration(webapp.RequestHandler):
                 user_rec.rfid = self.request.get("tag_id")
                 user_rec.name = self.request.get("first_name") + " " + self.request.get("last_name")
                 user_rec.foursq_status = "None"
-                user_rec.oauth_token = token.token
+                user_rec.oauth_token = token.key
                 user_rec.oauth_secret = token.secret
     
+                logging.debug("saving user data")
                 # Now save the data
                 db.put(user_rec)
                 self.response.out.write(self.saved)
