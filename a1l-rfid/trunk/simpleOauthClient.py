@@ -39,8 +39,13 @@ class SimpleOAuthClient(oauth.OAuthClient):
     def access_resource(self, oauth_request, resource):
         # via post body
         # -> some protected resources
-        #headers = {'Content-Type' :'application/x-www-form-urlencoded'}
-        self.connection.request(oauth_request.http_method, oauth_request.to_url())
+        if oauth_request.http_method == "POST":
+            headers = {'Content-Type' :'application/x-www-form-urlencoded'}
+            self.connection.request(oauth_request.http_method, 
+                                oauth_request.get_normalized_http_url(),
+                                body=oauth_request.to_postdata(), headers=headers)
+        else:
+            self.connection.request(oauth_request.http_method, oauth_request.to_url())
         response = self.connection.getresponse()
         return response.read()
 
