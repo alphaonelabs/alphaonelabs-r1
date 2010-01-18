@@ -47,9 +47,16 @@ void setup() {
         if (client.connect())
         {
             char getbuf[80];
-            sprintf(getbuf, "GET /rfid?scanned_id=%s HTTP/1.0\r\n\r\n",
+            sprintf(getbuf, "GET /rfid?scanned_id=%s HTTP/1.0\r\n",
                 code);
+            Serial.print("Sending command ");
+            Serial.println(getbuf);
+            client.println(getbuf);
             client.stop();
+        }
+        else
+        {
+          Serial.println("Client connect failed");
         }
       } 
       bytesread = 0; 

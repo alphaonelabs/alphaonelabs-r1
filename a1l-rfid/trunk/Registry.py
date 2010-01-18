@@ -77,6 +77,7 @@ class Registration(webapp.RequestHandler):
         <html>
             <head>
                 <title>All Done!</title>
+                <meta http-equiv='refresh' content='5;url=/'></meta>
             </head>
             <body>
                 <h1><font color='green'>All Done</font></h1>

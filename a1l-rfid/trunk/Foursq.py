@@ -34,18 +34,21 @@ class Foursq(webapp.RequestHandler):
                     entry.rfid_record = mapping
                     db.put(entry)
 
-                    # Use the stored token and secret to perform a checkin
-                    logging.getLogger().setLevel(logging.DEBUG)
-                    logging.debug("token "+mapping.oauth_token)
-                    logging.debug("secret "+mapping.oauth_secret)
-                    client = Registration()
-                    rc = client.access_resource(
-                        mapping.oauth_token, mapping.oauth_secret, 
-                        'checkin', vid=self.venue_id)
+                    if mapping is not None:
+                        # Use the stored token and secret to perform a checkin
+                        logging.getLogger().setLevel(logging.DEBUG)
+                        logging.debug("token "+mapping.oauth_token)
+                        logging.debug("secret "+mapping.oauth_secret)
+                        client = Registration()
+                        rc = client.access_resource(
+                            mapping.oauth_token, mapping.oauth_secret, 
+                            'checkin', vid=self.venue_id)
 
-                    # update the log entry's status
-                    entry.foursq_status = "checked_in"
-                    db.put(entry)
+                        # update the log entry's status
+                        entry.foursq_status = "checked_in"
+                        db.put(entry)
+                    else:
+                        logging.info("No corresponding record")
             elif self.request.path == '/last-rfid':
                 id = memcache.get('savedId')
                 if id is not None:
