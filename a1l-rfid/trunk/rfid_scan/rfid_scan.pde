@@ -47,7 +47,7 @@ void setup() {
         if (client.connect())
         {
             char getbuf[80];
-            sprintf(getbuf, "GET /rfid?scanned_id=%010x HTTP/1.0\r\n\r\n",
+            sprintf(getbuf, "GET /rfid?scanned_id=%s HTTP/1.0\r\n\r\n",
                 code);
             client.stop();
         }
