@@ -22,19 +22,22 @@
         <td colspan="2"
         style="text-align:center;margin-left:auto;margin-right:auto;"><span
           class="logo-bg"></span><img alt="logo"
-          src="Builds/a1l-rfid/static/a1logo.png" style="float: left"
+          src="a1logo.png" style="float: left"
           width="59" height="70" /> <span
           style="font-family: Arial,Helvetica,sans-serif;font-size: 40pt;color:#ffffff">Alpha
           One Labs RFID Reader</span></td>
       </tr>
       <tr>
-        <td>Start Date</td><td><input type="text" name='start'/></td>
+        <td>Start Date</td>
+        <td><input type="text" name='start' value='{{start}}'/></td>
       </tr>
       <tr>
-        <td>End Date</td><td><input type="text" name='end'/></td>
+        <td>End Date</td>
+        <td><input type="text" name='end' value='{{end}}'/></td>
       </tr>
       <tr>
-        <td>How many records to show</td><input type='text' name='count'/></td>
+        <td>How many records to show</td>
+        <td><input type="text" name='count' value='{{count}}'/></td>
       </tr>
       <tr>
         <td colspan='2'><input type='submit' name='submit' value='Update'/></td>
@@ -42,12 +45,12 @@
     </tbody>
   </table>
 </form>
-    <table>
+    <table width="75%">
         {% for row in data %}
             <tr>
-                <td>data.rfid_id</td>
-                <td>data.access_time</td>
-                <td>data.foursq_status</td>
+                <td>{{row.rfid_id}}</td>
+                <td>{{row.access_time}}</td>
+                <td>{{row.foursq_status}}</td>
             </tr>
         {% endfor %}
     </table>
