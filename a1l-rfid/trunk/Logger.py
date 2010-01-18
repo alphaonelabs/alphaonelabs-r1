@@ -40,7 +40,7 @@ class RFIDLogger(webapp.RequestHandler):
         logging.info("startDate "+str(startDate)+" endDate "+str(endDate)+" rowcount "+str(rowcount))
         sys.stderr.write("startDate "+str(startDate)+" endDate "+str(endDate)+" rowcount "+str(rowcount)+"\n")
         try:
-            query = db.GqlQuery("select * from AccessLog where access_time >= :1 and access_time <= :2 order by access_time desc", \
+            query = db.GqlQuery("select * from AccessLog where access_time >= :1 and access_time <= :2 order by access_time desc ", \
                 startDate, endDate)
 
             template_values = { 

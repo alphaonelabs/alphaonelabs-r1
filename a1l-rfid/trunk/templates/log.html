@@ -11,7 +11,7 @@
 
 <body>
 
-<form>
+<form method='POST'>
 
   <table border="0" style="width: 100%">
     <caption></caption>
@@ -28,19 +28,20 @@
           One Labs RFID Reader</span></td>
       </tr>
       <tr>
-        <td>Start Date</td>
+        <td align='right'>Start Date</td>
         <td><input type="text" name='start' value='{{start}}'/></td>
       </tr>
       <tr>
-        <td>End Date</td>
+        <td align='right'>End Date</td>
         <td><input type="text" name='end' value='{{end}}'/></td>
       </tr>
       <tr>
-        <td>How many records to show</td>
+        <td align='right'>How many records to show</td>
         <td><input type="text" name='count' value='{{count}}'/></td>
       </tr>
       <tr>
-        <td colspan='2'><input type='submit' name='submit' value='Update'/></td>
+        <td colspan='2' align='center' >
+            <input type='submit' name='submit' value='Update'/></td>
       </tr>
     </tbody>
   </table>
@@ -50,6 +51,11 @@
             <tr>
                 <td>{{row.rfid_id}}</td>
                 <td>{{row.access_time}}</td>
+                {% if row.rfid_record %}
+                <td>{{row.rfid_record.name}}</td>
+                {% else %}
+                <td>N/A</td>
+                {% endif %}
                 <td>{{row.foursq_status}}</td>
             </tr>
         {% endfor %}
