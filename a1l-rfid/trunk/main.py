@@ -20,7 +20,7 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from Foursq import Foursq 
 from Welcome import Welcome
-from Logger import Logger
+from Logger import RFIDLogger
 from Registry import Registration
 import sys
 
@@ -28,7 +28,7 @@ def main():
   application = webapp.WSGIApplication([('/', Welcome),
                                         ('/rfid', Foursq),
                                         ('/last-rfid', Foursq),
-                                        ('/log', Logger),
+                                        ('/log', RFIDLogger),
                                         ('/register',Registration),
                                         ('/got-request-token',Registration),
                                         ('/save-request-token',Registration),
