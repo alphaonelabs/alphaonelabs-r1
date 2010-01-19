@@ -1,4 +1,4 @@
-application: a1l-rfid
+application: a1lrfid
 version: 1
 runtime: python
 api_version: 1

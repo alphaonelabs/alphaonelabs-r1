@@ -14,7 +14,8 @@ char code[10];
 int bytesread = 0; 
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 byte ip[]  = { 192,168,1,50 };
-byte server[] = { 192,168,1,118 };
+//byte server[] = { 192,168,1,118 };
+byte server[] = { 192,168,1,99 };
 Client client(server, 8082);
 
 
@@ -60,9 +61,15 @@ void setup() {
         }
       } 
       bytesread = 0; 
-           delay(500);                       // wait for a second 
+      delay(500);                       // wait for a second            
     } 
   } 
+  if ((millis() & 0x7fff) == 0x7fff) // about twice a minute
+  {
+    digitalWrite(2,HIGH);
+    delay(2);
+    digitalWrite(2,LOW);
+  }
 } 
 
 // extra stuff
