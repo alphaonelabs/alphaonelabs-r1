@@ -17,8 +17,13 @@ from pprint import PrettyPrinter
 #*Application Name:* Alpha One Labs
 #RFID<http://foursquare.com/oauth/www.alphaonelabs.com>
 
-consumer_key = '1TDWB1RAY1FQJT2HVOUZUMHCCYFBJA5EX0Z440OYZIRQTQMP'
-consumer_secret = 'XAV035QZG2DTALIHXQZ4CHRPZC4AJZAUTRRSWUEJQKDUTEN3'
+# rfid.alphaonelabs.com
+#consumer_key = '1TDWB1RAY1FQJT2HVOUZUMHCCYFBJA5EX0Z440OYZIRQTQMP'
+#consumer_secret = 'XAV035QZG2DTALIHXQZ4CHRPZC4AJZAUTRRSWUEJQKDUTEN3'
+
+#a1lrfid.appspot.com/got-request-token
+consumer_key = 'RTKOC40KGDJLVYQWFWSBFEIC3VGQWCY4EDIG3FI1TJXW3XZG'
+consumer_secret = 'OLVWAGXOZSJLZBFWVUDPWOOOOWK2KEVJ55QEKZCBYJK5C0AO'
 
 class Registration(webapp.RequestHandler):
     requestAuthorization = """

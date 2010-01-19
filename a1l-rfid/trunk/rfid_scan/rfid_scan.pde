@@ -15,8 +15,8 @@ int bytesread = 0;
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 byte ip[]  = { 192,168,1,50 };
 //byte server[] = { 192,168,1,118 };
-byte server[] = { 192,168,1,99 };
-Client client(server, 8082);
+byte server[] = { 74,125,91,141 };
+Client client(server, 80);
 
 
 void setup() { 
