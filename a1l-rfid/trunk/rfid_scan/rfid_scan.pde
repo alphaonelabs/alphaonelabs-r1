@@ -48,7 +48,7 @@ void setup() {
         if (client.connect())
         {
             char getbuf[80];
-            sprintf(getbuf, "GET /rfid?scanned_id=%s HTTP/1.0\r\n",
+            sprintf(getbuf, "GET http://a1lrfid.appspot.com/rfid?scanned_id=%s HTTP/1.0\r\n",
                 code);
             Serial.print("Sending command ");
             Serial.println(getbuf);
