@@ -67,7 +67,6 @@
     <table width="75%">
         {% for row in data %}
             <tr>
-                <td>{{row.rfid_id}}</td>
                 <td>{{row.access_time}}</td>
                 {% if row.rfid_record %}
                 <td>{{row.rfid_record.name}}</td>
