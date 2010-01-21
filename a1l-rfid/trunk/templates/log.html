@@ -7,9 +7,20 @@
   <title>Access Log</title>
   <meta name="generator" content="Amaya, see http://www.w3.org/Amaya/" />
   <link href="test.css" rel="stylesheet" type="text/css" />
+  <script type='text/javascript'>
+  <!--
+    function check_checkbox()
+    {
+        var cb = document.getElementsByName("now")[0];
+        var tb = document.getElementsByName("end")[0];
+
+        tb.disabled = cb.checked;
+    }
+  // -->
+  </script>
 </head>
 
-<body>
+<body onload='check_checkbox()'>
 
 <form method='POST'>
 
@@ -33,7 +44,14 @@
       </tr>
       <tr>
         <td align='right'>End Date</td>
-        <td><input type="text" name='end' value='{{end}}'/></td>
+        <td><input type="text" name='end' value='{{end}}' />
+            &nbsp;Now 
+            <input type='checkbox' name='now' value='now' 
+                {% if now %}
+                checked='true' 
+                {% endif %}
+                onclick='check_checkbox()'/>
+        </td>
       </tr>
       <tr>
         <td align='right'>How many records to show</td>

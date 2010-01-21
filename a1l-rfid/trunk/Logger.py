@@ -18,27 +18,31 @@ class RFIDLogger(webapp.RequestHandler):
         logging.getLogger().setLevel(logging.DEBUG)
         logging.debug("starting log")
         startDate = datetime(1900,1,1)
+        nowflag=True
+        if self.request.get('now') != None and self.request.get('now') != 'now':
+            nowflag=False
+        if self.request.get('submit') == None or self.request.get('submit') == "":
+            nowflag=True
+
         try:
             startDate = datetime.strptime(self.request.get('start'),DATE_FORMAT)
         except:
             pass
 
-        logging.debug("a")
         endDate = datetime.now()
         try:
-            endDate = datetime.strptime(self.request.get('end'),DATE_FORMAT)
+            if not nowflag:
+                endDate = datetime.strptime(self.request.get('end'),DATE_FORMAT)
         except:
             pass
 
-        logging.debug("b")
         rowcount = 20
         try:
             rowcount = int(self.request.get('count'))
         except:
             pass
 
-        logging.info("startDate "+str(startDate)+" endDate "+str(endDate)+" rowcount "+str(rowcount))
-        sys.stderr.write("startDate "+str(startDate)+" endDate "+str(endDate)+" rowcount "+str(rowcount)+"\n")
+        logging.info("startDate "+str(startDate)+" endDate "+str(endDate)+" rowcount "+str(rowcount) + " now " + str(nowflag))
         try:
             query = db.GqlQuery("select * from AccessLog where access_time >= :1 and access_time <= :2 order by access_time desc ", \
                 startDate, endDate)
@@ -46,6 +50,7 @@ class RFIDLogger(webapp.RequestHandler):
             template_values = { 
                             'start': datetime.strftime(startDate, DATE_FORMAT),
                             'end': datetime.strftime(endDate, DATE_FORMAT),
+                            'now': nowflag,
                             'count': rowcount,
                             'data': query.fetch(rowcount)
                           }
