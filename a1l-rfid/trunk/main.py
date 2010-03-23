@@ -16,27 +16,26 @@
 #
 
 
-from google.appengine.ext import webapp
-from google.appengine.ext.webapp import util
-from Foursq import Foursq 
-from Welcome import Welcome
+from Foursq import Foursq
 from Logger import RFIDLogger
 from Registry import Registration
-import sys
+from Welcome import Welcome
+from google.appengine.ext import webapp
+from google.appengine.ext.webapp import util
 
 def main():
-  application = webapp.WSGIApplication([('/', Welcome),
-                                        ('/rfid', Foursq),
-                                        ('/last-rfid', Foursq),
-                                        ('/log', RFIDLogger),
-                                        ('/register',Registration),
-                                        ('/got-request-token',Registration),
-                                        ('/save-request-token',Registration),
-                                        ('.*', Welcome)
-                                        ],
-                                       debug=True)
-  util.run_wsgi_app(application)
+    application = webapp.WSGIApplication([('/', Welcome),
+                                         ('/rfid', Foursq),
+                                         ('/last-rfid', Foursq),
+                                         ('/log', RFIDLogger),
+                                         ('/register', Registration),
+                                         ('/got-request-token', Registration),
+                                         ('/save-request-token', Registration),
+                                         ('.*', Welcome)
+                                         ],
+                                         debug=True)
+    util.run_wsgi_app(application)
 
 
 if __name__ == '__main__':
-  main()
+    main()

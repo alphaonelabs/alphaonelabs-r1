@@ -20,7 +20,7 @@ function rfscan_result() {
 
     if (req.readyState < 4)
     {
-       return;
+        return;
     }
     if (req.status == 200)
     {

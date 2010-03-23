@@ -1,6 +1,7 @@
-from oauth import oauth
 import httplib
 import logging
+
+from oauth import oauth
 
 # example client using httplib with headers
 class SimpleOAuthClient(oauth.OAuthClient):
@@ -25,8 +26,8 @@ class SimpleOAuthClient(oauth.OAuthClient):
         # -> OAuthToken
         self.connection.request(oauth_request.http_method, self.access_token_url, headers=oauth_request.to_header()) 
         response = self.connection.getresponse()
-        s=response.read()
-        logging.debug("response "+s)
+        s = response.read()
+        logging.debug("response " + s)
         return oauth.OAuthToken.from_string(s)
 
     def authorize_token(self, oauth_request):
@@ -40,10 +41,10 @@ class SimpleOAuthClient(oauth.OAuthClient):
         # via post body
         # -> some protected resources
         if oauth_request.http_method == "POST":
-            headers = {'Content-Type' :'application/x-www-form-urlencoded'}
+            headers = {'Content-Type':'application/x-www-form-urlencoded'}
             self.connection.request(oauth_request.http_method, 
-                                oauth_request.get_normalized_http_url(),
-                                body=oauth_request.to_postdata(), headers=headers)
+                                    oauth_request.get_normalized_http_url(),
+                                    body=oauth_request.to_postdata(), headers=headers)
         else:
             self.connection.request(oauth_request.http_method, oauth_request.to_url())
         response = self.connection.getresponse()

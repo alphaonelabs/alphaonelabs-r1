@@ -1,17 +1,14 @@
-from google.appengine.ext import webapp
-from google.appengine.ext.webapp import util
-from google.appengine.api import memcache
-import os
-from google.appengine.ext.webapp import template
-import time
 import logging
-import traceback
+from pprint import PrettyPrinter
 import sys
+import traceback
+from xml.dom.minidom import parseString
+
 from Models import *
 import foursquare
+from google.appengine.api import memcache
+from google.appengine.ext import webapp
 from oauth import oauth
-from xml.dom.minidom import parseString
-from pprint import PrettyPrinter
 
 #We currently support hmac-sha1 signed requests
 #*Application Name:* Alpha One Labs
@@ -106,20 +103,20 @@ class Registration(webapp.RequestHandler):
         </html>
     """
 
-    def access_resource(self, token, secret, method, **params):
-        logging.info('calling '+method+' with '+PrettyPrinter().pformat(params))
+    def access_resource(self, token, secret, method, ** params):
+        logging.info('calling ' + method + ' with ' + PrettyPrinter().pformat(params))
         try:
-            credentials = foursquare.OAuthCredentials( \
-                    consumer_key, consumer_secret)
+            credentials = foursquare.OAuthCredentials(\
+                                                      consumer_key, consumer_secret)
             fs = foursquare.Foursquare(credentials)
             user_token = oauth.OAuthToken(token, secret)
             credentials.set_access_token(user_token)
-            resp = fs.call_method(method, **params)
-            logging.debug('returning '+resp)
+            resp = fs.call_method(method, ** params)
+            logging.debug('returning ' + resp)
             return resp
         except Exception, e:
             # If the request failed, display the something went wrong page
-            logging.error("Failed registry request: "+str(e))
+            logging.error("Failed registry request: " + str(e))
             traceback.print_exception(sys.exc_info()[0], sys.exc_info()[1], 
                                       sys.exc_info()[2], 5, sys.stderr)
             return None
@@ -131,10 +128,10 @@ class Registration(webapp.RequestHandler):
         logging.getLogger().setLevel(logging.DEBUG)
 
         # What step are we here with?
-        logging.info("request: "+self.request.path)
+        logging.info("request: " + self.request.path)
         try:
-            credentials = foursquare.OAuthCredentials( \
-                    consumer_key, consumer_secret)
+            credentials = foursquare.OAuthCredentials(\
+                                                      consumer_key, consumer_secret)
             fs = foursquare.Foursquare(credentials)
 
             if self.request.path == "/register":
@@ -142,11 +139,11 @@ class Registration(webapp.RequestHandler):
                 # Get the temporary auth token
                 app_token = fs.request_token()
                 auth_url = fs.authorize(app_token)
-                if not memcache.set(key='token',value=app_token):
+                if not memcache.set(key='token', value=app_token):
                     raise Exception("Failed to set token in session")
                 self.response.out.write(
-                  self.requestAuthorization % { 'url': auth_url }
-                )
+                                        self.requestAuthorization % {'url': auth_url}
+                                        )
 
             elif self.request.path == '/got-request-token':
                 logging.debug("Register with auth token")
@@ -157,7 +154,7 @@ class Registration(webapp.RequestHandler):
                 logging.info('* Obtain an access token ...')
                 user_token = fs.access_token(token)
                 credentials.set_access_token(user_token)
-                if not memcache.set(key='token',value=user_token):
+                if not memcache.set(key='token', value=user_token):
                     raise Exception("Failed to set token in session")
                 logging.info('GOT')
                 logging.info('key: %s' % str(user_token.key))
@@ -165,30 +162,30 @@ class Registration(webapp.RequestHandler):
                 if not memcache.set('saveInsteadOfCheckin', True):
                     raise Exception("Failed to set save flag")
                 try:
-                    respstr=fs.user()
-                    resp=parseString(respstr)
-                    logging.debug('resp: '+str(respstr))
+                    respstr = fs.user()
+                    resp = parseString(respstr)
+                    logging.debug('resp: ' + str(respstr))
                     firstnameNode = resp.getElementsByTagName('firstname')[0]
-                    firstname=firstnameNode.firstChild.data
+                    firstname = firstnameNode.firstChild.data
                     lastnameNode = resp.getElementsByTagName('lastname')[0]
-                    lastname=lastnameNode.firstChild.data
+                    lastname = lastnameNode.firstChild.data
                     picNode = resp.getElementsByTagName('photo')[0]
-                    picurl=picNode.firstChild.data
-                    pic = self.picFragment % { 'picurl': picurl }
+                    picurl = picNode.firstChild.data
+                    pic = self.picFragment % {'picurl': picurl}
                 except:
                     traceback.print_exception(sys.exc_info()[0], 
-                                      sys.exc_info()[1], 
-                                      sys.exc_info()[2], 5, sys.stderr)
+                                              sys.exc_info()[1],
+                                              sys.exc_info()[2], 5, sys.stderr)
                     firstname = 'First'
                     lastname = 'last'
                     pic = ''
 
                 self.response.out.write(
-                    self.gotAuthorization % {
-                        'firstname': firstname, 'lastname': lastname,
-                        'pic': pic
-                    }
-                )
+                                        self.gotAuthorization % {
+                                        'firstname': firstname, 'lastname': lastname,
+                                        'pic': pic
+                                        }
+                                        )
             elif self.request.path == '/save-request-token':
                 logging.debug("Save token data")
                 memcache.delete("saveInsteadOfCheckin")
@@ -199,7 +196,7 @@ class Registration(webapp.RequestHandler):
                 user_rec = RFIDMapping()
                 user_rec.rfid = self.request.get("tag_id")
                 user_rec.name = self.request.get("first_name") + \
-                        " " + self.request.get("last_name")
+                    " " + self.request.get("last_name")
                 user_rec.foursq_status = "None"
                 user_rec.oauth_token = token.key
                 user_rec.oauth_secret = token.secret
@@ -209,12 +206,12 @@ class Registration(webapp.RequestHandler):
                 db.put(user_rec)
                 self.response.out.write(self.saved)
             else:
-                raise Exception("Unknown request: "+self.request.path)
+                raise Exception("Unknown request: " + self.request.path)
 
         except Exception, e:
             # If the request failed, display the something went wrong page
             self.response.out.write(self.authFailed)
-            logging.error("Failed registry request: "+str(e))
+            logging.error("Failed registry request: " + str(e))
             traceback.print_exception(sys.exc_info()[0], sys.exc_info()[1], 
                                       sys.exc_info()[2], 5, sys.stderr)
             return

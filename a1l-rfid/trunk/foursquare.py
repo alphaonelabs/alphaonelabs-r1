@@ -38,13 +38,13 @@ fs.user()
 {'user': {'city': {'geolat': 34.0443, 'name': 'Los Angeles', ...}}}
 """
 
+import base64
 import httplib
-import urllib
+import logging
+from pprint import PrettyPrinter
 import string
 import sys
-import logging
-import base64
-from pprint import PrettyPrinter
+import urllib
 
 from oauth import oauth
 
@@ -58,17 +58,17 @@ OAUTH_SERVER = 'foursquare.com'
 
 # Calling templates
 API_URL_TEMPLATE   = string.Template(
-    API_PROTOCOL + '://' + API_SERVER + '/' + API_VERSION + '/${method}'
-)
+                                     API_PROTOCOL + '://' + API_SERVER + '/' + API_VERSION + '/${method}'
+                                     )
 
 OAUTH_URL_TEMPLATE = string.Template(
-    API_PROTOCOL + '://' + OAUTH_SERVER + '/oauth/${method}'
-)
+                                     API_PROTOCOL + '://' + OAUTH_SERVER + '/oauth/${method}'
+                                     )
 
 
 POST_HEADERS = {
     'Content-type': 'application/x-www-form-urlencoded',
-    'Accept'      : 'text/plain'
+    'Accept': 'text/plain'
 }
 
 
@@ -142,7 +142,7 @@ def_method('checkin',
            auth_required=True,
            http_method='POST',
            optional=['vid', 'venue', 'shout', 'private',
-                     'twitter', 'facebook', 'geolat', 'geolong'])
+           'twitter', 'facebook', 'geolat', 'geolong'])
 
 def_method('history',
            auth_required=True,
@@ -177,7 +177,7 @@ def_method('addvenue',
            auth_required=True,
            http_method='POST',
            required=['name', 'address', 'crossstreet',
-                     'city', 'state', 'cityid'],
+           'city', 'state', 'cityid'],
            optional=['zip', 'phone', 'geolat', 'geolong'])
 
 def_method('venue_proposeedit',
@@ -186,7 +186,7 @@ def_method('venue_proposeedit',
            # Documentation does not specify if crosstreet is required
            # or optional.
            required=['vid', 'name', 'address', 'crossstreet', 'city',
-                     'state', 'geolat', 'geolong'],
+           'state', 'geolat', 'geolong'],
            optional=['zip', 'phone'])
 
 def_method('venue_flagclosed',
@@ -285,11 +285,11 @@ class OAuthCredentials(Credentials):
         if token == None:
             token = self.access_token
         request = oauth.OAuthRequest.from_consumer_and_token(
-            self.oauth_consumer,
-            token=token,
-            http_method=http_method,
-            http_url=url,
-            parameters=parameters)
+                                                             self.oauth_consumer,
+                                                             token=token,
+                                                             http_method=http_method,
+                                                             http_url=url,
+                                                             parameters=parameters)
         request.sign_request(self.signature_method, self.oauth_consumer, token)
         if http_method == 'GET':
             return request.to_url(), request.to_postdata(), {}
@@ -319,7 +319,7 @@ class BasicCredentials(Credentials):
             args = query
         else:
             args = None
-        return url+ '?' + query, args, {'Authorization': 'Basic %s' % (auth_string,)}
+        return url + '?' + query, args, {'Authorization': 'Basic %s' % (auth_string, )}
 
     def authorized(self):
         return True
@@ -364,8 +364,8 @@ class FoursquareAccumulator:
     def __repr__(self):
         return self.name
     
-    def __call__(self, *args, **kw):
-        return self.foursquare_obj.call_method(self.name, *args, **kw)
+    def __call__(self, * args, ** kw):
+        return self.foursquare_obj.call_method(self.name, * args, ** kw)
     
 
 class Foursquare:
@@ -410,9 +410,9 @@ class Foursquare:
         return response_body
     
 
-    def call_method(self, method, *args, **kw):
+    def call_method(self, method, * args, ** kw):
         logging.debug('Calling foursquare method %s %s %s' % (method, args, kw))
-        logging.debug('Credentials: %s' % (self.credentials,))
+        logging.debug('Credentials: %s' % (self.credentials, ))
         
         # Theoretically, we might want to do 'does this method exits?'
         # checks here, but as all the aggregators are being built in
@@ -421,7 +421,7 @@ class Foursquare:
         meta = FOURSQUARE_METHODS[method]
 
         if meta['auth_required'] and (not self.credentials or not self.credentials.authorized()):
-            raise FoursquareException('Remote method %s requires authorization.' % (`method`,))
+            raise FoursquareException('Remote method %s requires authorization.' % (`method`, ))
         
         if args:
             # Positional arguments are mapped to meta['required'] and
@@ -442,7 +442,7 @@ class Foursquare:
                                           (arg, method) + \
                                           'required arguments are %s., optional arguments are %s.' % \
                                           (', '.join(meta['required']),
-                                           ', '.join(meta['optional'])))
+                                          ', '.join(meta['optional'])))
         
         # Token shouldn't be handled as a normal arg, so strip it out
         # (but make sure we have it, even if it's None)
@@ -455,21 +455,21 @@ class Foursquare:
         # Build the request.
         if meta['namespaced']:
             cred_url, cred_args, cred_headers = self.credentials.build_request(
-                meta['http_method'],
-                meta['url_template'].substitute(method=method.replace('_', '/')),
-                kw,
-                token=token)
+                                                                               meta['http_method'],
+                                                                               meta['url_template'].substitute(method=method.replace('_', '/')),
+                                                                               kw,
+                                                                               token=token)
         else:
             cred_url, cred_args, cred_headers = self.credentials.build_request(
-                meta['http_method'],
-                meta['url_template'].substitute(method=method),
-                kw,
-                token=token)
+                                                                               meta['http_method'],
+                                                                               meta['url_template'].substitute(method=method),
+                                                                               kw,
+                                                                               token=token)
             
 
-        logging.debug("cred_url: "+cred_url)
-        logging.debug("cred_args: "+cred_args)
-        logging.debug("cred_headers: "+PrettyPrinter().pformat(cred_headers))
+        logging.debug("cred_url: " + cred_url)
+        logging.debug("cred_args: " + cred_args)
+        logging.debug("cred_headers: " + PrettyPrinter().pformat(cred_headers))
         # If the return type is the request_url, simply build the URL and 
         # return it witout executing anything    
         if 'returns' in meta and meta['returns'] == 'request_url':

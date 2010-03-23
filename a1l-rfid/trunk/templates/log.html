@@ -1,80 +1,80 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
-  <title>Access Log</title>
-  <meta name="generator" content="Amaya, see http://www.w3.org/Amaya/" />
-  <link href="test.css" rel="stylesheet" type="text/css" />
-  <script type='text/javascript'>
-  <!--
-    function check_checkbox()
-    {
-        var cb = document.getElementsByName("now")[0];
-        var tb = document.getElementsByName("end")[0];
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+        <title>Access Log</title>
+        <meta name="generator" content="Amaya, see http://www.w3.org/Amaya/" />
+        <link href="test.css" rel="stylesheet" type="text/css" />
+        <script type='text/javascript'>
+            <!--
+            function check_checkbox()
+            {
+                var cb = document.getElementsByName("now")[0];
+                var tb = document.getElementsByName("end")[0];
 
-        tb.disabled = cb.checked;
-    }
-  // -->
-  </script>
-</head>
+                tb.disabled = cb.checked;
+            }
+            // -->
+        </script>
+    </head>
 
-<body onload='check_checkbox()'>
+    <body onload='check_checkbox()'>
 
-<form method='POST'>
+        <form method='POST' action="">
 
-  <table border="0" style="width: 100%">
-    <caption></caption>
-    <col />
-    <col />
-    <tbody>
-      <tr bgcolor="#404055" style="border:solid 3px">
-        <td colspan="2"
-        style="text-align:center;margin-left:auto;margin-right:auto;"><span
-          class="logo-bg"></span><img alt="logo"
-          src="a1logo.png" style="float: left"
-          width="59" height="70" /> <span
-          style="font-family: Arial,Helvetica,sans-serif;font-size: 40pt;color:#ffffff">Alpha
-          One Labs RFID Reader</span></td>
-      </tr>
-      <tr>
-        <td align='right'>Start Date</td>
-        <td><input type="text" name='start' value='{{start}}'/></td>
-      </tr>
-      <tr>
-        <td align='right'>End Date</td>
-        <td><input type="text" name='end' value='{{end}}' />
-            &nbsp;Now 
-            <input type='checkbox' name='now' value='now' 
-                {% if now %}
-                checked='true' 
-                {% endif %}
-                onclick='check_checkbox()'/>
-        </td>
-      </tr>
-      <tr>
-        <td align='right'>How many records to show</td>
-        <td><input type="text" name='count' value='{{count}}'/></td>
-      </tr>
-      <tr>
-        <td colspan='2' align='center' >
-            <input type='submit' name='submit' value='Update'/></td>
-      </tr>
-    </tbody>
-  </table>
-</form>
+            <table border="0" style="width: 100%">
+                <caption></caption>
+                <col />
+                <col />
+                <tbody>
+                    <tr bgcolor="#404055" style="border:solid 3px">
+                        <td colspan="2"
+                            style="text-align:center;margin-left:auto;margin-right:auto;"><span
+                                class="logo-bg"></span><img alt="logo"
+                                src="a1logo.png" style="float: left"
+                                width="59" height="70" /> <span
+                                style="font-family: Arial,Helvetica,sans-serif;font-size: 40pt;color:#ffffff">Alpha
+                                One Labs RFID Reader</span></td>
+                    </tr>
+                    <tr>
+                        <td align='right'>Start Date</td>
+                        <td><input type="text" name='start' value='{{start}}'/></td>
+                    </tr>
+                    <tr>
+                        <td align='right'>End Date</td>
+                        <td><input type="text" name='end' value='{{end}}' />
+                            &nbsp;Now
+                            <input type='checkbox' name='now' value='now'
+                                   {% if now %}
+                                   checked='true'
+                                   {% endif %}
+                                   onclick='check_checkbox()'/></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td align='right'>How many records to show</td>
+                    <td><input type="text" name='count' value='{{count}}'/></td>
+                </tr>
+                <tr>
+                    <td colspan='2' align='center' >
+                        <input type='submit' name='submit' value='Update'/></td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
     <table width="75%">
         {% for row in data %}
-            <tr>
-                <td>{{row.access_time}}</td>
-                {% if row.rfid_record %}
-                <td>{{row.rfid_record.name}}</td>
-                {% else %}
-                <td>N/A</td>
-                {% endif %}
-                <td>{{row.foursq_status}}</td>
-            </tr>
+        <tr>
+            <td>{{row.access_time}}</td>
+            {% if row.rfid_record %}
+            <td>{{row.rfid_record.name}}</td>
+            {% else %}
+            <td>N/A</td>
+            {% endif %}
+            <td>{{row.foursq_status}}</td>
+        </tr>
         {% endfor %}
     </table>
     <a href='/'>Return to Main Page</a>
