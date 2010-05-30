@@ -1,0 +1,48 @@
+[Eagle]
+Version="05 07 00"
+Platform="Mac OS X"
+Serial="62191E841E-LSR-WLM-1EL"
+Globals="Globals"
+Desktop="Desktop"
+
+[Globals]
+AutoSaveProject=1
+UsedLibrary="/Applications/EAGLE/lbr/74xx-us.lbr"
+UsedLibrary="/Applications/EAGLE/lbr/SparkFun.1.lbr"
+UsedLibrary="/Applications/EAGLE/lbr/analog-devices.lbr"
+UsedLibrary="/Applications/EAGLE/lbr/atmel.lbr"
+UsedLibrary="/Applications/EAGLE/lbr/con-amp.lbr"
+UsedLibrary="/Applications/EAGLE/lbr/con-amphenol.lbr"
+UsedLibrary="/Applications/EAGLE/lbr/con-molex.lbr"
+UsedLibrary="/Applications/EAGLE/lbr/discrete.lbr"
+UsedLibrary="/Applications/EAGLE/lbr/holes.lbr"
+UsedLibrary="/Applications/EAGLE/lbr/jumper.lbr"
+UsedLibrary="/Applications/EAGLE/lbr/led.lbr"
+UsedLibrary="/Applications/EAGLE/lbr/linear-technology.lbr"
+UsedLibrary="/Applications/EAGLE/lbr/lnk304306.lbr"
+UsedLibrary="/Applications/EAGLE/lbr/microchip.lbr"
+UsedLibrary="/Applications/EAGLE/lbr/national-semiconductor.lbr"
+UsedLibrary="/Applications/EAGLE/lbr/opto-micro-linear.lbr"
+UsedLibrary="/Applications/EAGLE/lbr/opto-vishay.lbr"
+UsedLibrary="/Applications/EAGLE/lbr/optocoupler.lbr"
+UsedLibrary="/Applications/EAGLE/lbr/photo-elements.lbr"
+UsedLibrary="/Applications/EAGLE/lbr/rcl.lbr"
+UsedLibrary="/Applications/EAGLE/lbr/supply1.lbr"
+UsedLibrary="/Applications/EAGLE/lbr/switch.lbr"
+UsedLibrary="/Applications/EAGLE/lbr/transistor-npn.lbr"
+UsedLibrary="/Applications/EAGLE/lbr/transistor.lbr"
+UsedLibrary="/Applications/EAGLE/lbr/v-reg.lbr"
+UsedLibrary="/Users/robertdiamond/Downloads/SparkFun.lbr"
+UsedLibrary="/Users/robertdiamond/Downloads/avr-6.lbr"
+UsedLibrary="/Users/robertdiamond/Downloads/nixie_tube.lbr"
+UsedLibrary="/Users/robertdiamond/Downloads/russian-nixies.lbr"
+
+[Win_1]
+Type="Control Panel"
+Loc="1752 31 2952 608"
+State=2
+Number=0
+
+[Desktop]
+Screen="3360 900"
+Window="Win_1"
